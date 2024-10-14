@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+            <style>
+                @media screen and (max-width: 480px) {
+					#formInputs {
+						display: flex;
+						flex-direction: column;
+					}
+
+                    #formInputs * {
+                        margin-bottom: 10px;
+                    }
+
+				}
+
+				.customBorder {
+						border: 2px solid rgb(158, 154, 154); 
+						border-radius: 5px; 
+						margin: 3px;
+						cursor: pointer;
+				}
+            </style>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<h1 class="h3 mb-3">Upload Inovice</h1>
+
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Please fill the following details - </h5>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										{% if invoice_image.url %}
+										<div class="col customBorder">
+											<img src="{{invoice_image.url}}" class="img-fluid rounded-start">	
+										</div>
+										{% endif %}
+
+										<div class="col">
+											<form method="post" action="" id="request_form" enctype="multipart/form-data">
+												{% csrf_token %}
+												<div class="row" id="formInputs">
+		
+													<div class="col">
+														<label class="form-label">Request Number</label>
+														<input class="form-control form-control-lg" type="text" name="request_number" placeholder="Enter Request Number" value="{{ single_request.rid }}" readonly/>
+													</div>
+												</div>
+												<br>
+												<div class="row" id="formInputs">
+													<div class="col">
+														<label class="form-label">Date of Upload</label>
+														<input class="form-control form-control-lg" type="text" name="request_number" placeholder="Enter Request Number" value="{{ single_request.updated }}" readonly/>
+													</div>
+												</div>
+												<br>
+												{% if request.user.role == 'accountant' %}
+												<div class="row">
+													<label class="form-label">Upload Inovice</label>
+														<div class="input-group mb-3">
+															<input type="file" class="form-control" id="upload_invoice">
+														</div>
+												</div>
+												<br>
+												<div class="text-center mt-3">
+													{% if invoice_image.url %}
+													<button onclick="updateInvoice(event)" type="submit" class="btn btn-lg btn-success">Update</button>
+													{% else %}
+													<button onclick="uploadInvoice(event)" type="submit" class="btn btn-lg btn-success">Upload</button>
+													{% endif %}
+												</div>
+												{% endif %}
+											</form>
+										</div>
+									</div>
+                                   
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+            <script>
+                function uploadInvoice(event){
+					event.preventDefault();
+
+					let upload_invoice = $('#upload_invoice')[0].files[0];
+
+					let formData = new FormData();
+    				formData.append("upload_invoice", upload_invoice);
+    				formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+
+					if (!upload_invoice) {
+						alert("Please select an image before uploading.");
+						return;
+					}
+
+					$.ajax({
+                        type: 'POST',
+                        url: '{% url "uploadInvoice" single_request.rid %}',
+                        data: formData,
+						processData: false,
+        				contentType: false,
+                        success: function(data){
+                            alert('Uploaded')
+							window.location.href = '{% url "uploadInvoice" single_request.rid %}'
+                        },
+                        error: function(data){
+                            console.log('Error')
+                        }
+                    })
+				}
+
+				function updateInvoice(event){
+					event.preventDefault();
+
+					let upload_invoice = $('#upload_invoice')[0].files[0];
+
+					let formData = new FormData();
+    				formData.append("upload_invoice", upload_invoice);
+    				formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+
+					if (!upload_invoice) {
+						alert("Please select an image before uploading.");
+						return;
+					}
+
+					$.ajax({
+                        type: 'POST',
+                        url: '{% url "updateInvoice" "iid" %}',
+                        data: formData,
+						processData: false,
+        				contentType: false,
+                        success: function(data){
+                            alert('Uploaded')
+							window.location.href = '{% url "uploadInvoice" single_request.rid %}'
+                        },
+                        error: function(data){
+                            console.log('Error')
+                        }
+                    })
+				}
+
+            </script>
+
+{% endblock %}

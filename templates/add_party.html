@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+			<main class="content">
+				<div class="container-fluid p-0">
+					<a href="{% url 'salesman_dashboard' %}" class="btn btn-info" style="margin-bottom: 10px;">
+						<strong>
+							<i class="align-middle me-2" data-feather="arrow-left-circle"></i> <span class="align-middle">Back</span>
+						</strong>
+					</a>
+					
+					<h1 class="h3 mb-3">
+						Add Party
+					</h1>
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								{% for message in messages %}
+									{% if forloop.last %}
+										<div class="bg-primary m-2 p-2" style="border-radius: 5px; color: white;">
+											{{message}}
+										</div>
+									{% endif %}
+								{% endfor %}
+								<div class="card-header">
+									<h5 class="card-title mb-0">Please fill the following details - </h5>
+								</div>
+								<div class="card-body">
+                                    <form method="post" action="">
+										{% csrf_token %}
+                                        <div class="row">
+                                            <div class="col">
+                                                <label class="form-label">Proprietor Name</label>
+                                                <input class="form-control form-control-lg" type="text" name="proprietor_name" placeholder="Enter proprietor name" />
+                                            </div>
+                                            <div class="col">
+                                                <label class="form-label">Company Name</label>
+                                                <input class="form-control form-control-lg" type="text" name="company_name" placeholder="Enter comapny name" />
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col">
+                                                <label class="form-label">Company Address</label>
+                                                <input class="form-control form-control-lg" type="text" name="company_address" placeholder="Enter phone number" />
+                                            </div>
+                                            <div class="col">
+                                                <label class="form-label">Phone Number</label>
+                                                <input class="form-control form-control-lg" type="number" name="phone_number" placeholder="Enter Phone Number" />
+                                            </div>
+                                            
+                                        </div>
+										<br>
+										<div class="text-center mt-3">
+											<button class="btn btn-lg btn-success">Add Party</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+			
+{% endblock %}

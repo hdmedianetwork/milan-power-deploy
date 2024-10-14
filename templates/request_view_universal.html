@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+
+{% block content %}
+			<style>
+				@media screen and (max-width: 480px) {
+					#inputs {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: center;
+					}
+
+					#inputs div {
+						width: 100%;
+						margin-bottom: 10px;
+					}
+
+					.card-header {
+						display: flex;
+						flex-direction: column;
+						margin-top: 10px;
+					}
+
+					.button-flex{
+						display: flex;
+						flex-direction: column;
+					}
+
+					.button-flex a, .button-flex button {
+						margin-top: 5px;
+					}
+				}
+
+				
+				.customBorder {
+						border: 2px solid rgb(158, 154, 154); 
+						border-radius: 5px; 
+						margin: 3px;
+						cursor: pointer;
+				}
+
+
+
+            </style>
+
+			<main class="content">
+
+
+
+				<div class="container-fluid p-0">
+					<div class="d-flex justify-content-between mb-2 p-1">
+						<h1 class="h3 mb-3">Viewing Request</h1>
+						{% if single_request.request_status == 'refunded' %}
+							<a href="{% url 'uploadInvoice' single_request.rid %}" class="btn btn-primary">View Invoice</a>
+						{% endif %}
+					</div>
+					
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header d-flex justify-content-between">
+									<h5 class="card-title mb-0">Request Number - {{single_request.rid}}</h5>
+									<br>
+									<div>
+										{% if single_request.urgency_status == 'in_review' %}
+										<td><span class="badge bg-warning fs-6">Urgency: In Review</span></td>
+										{% elif single_request.urgency_status == 'accepted' %}
+										<td><span class="badge bg-success fs-6">Urgency: Accepted</span></td>
+										{% elif single_request.urgency_status == 'rejected' %}
+										<td><span class="badge bg-danger fs-6">Urgency: Rejected</span></td>
+										{% endif %}
+										<td><span class="badge bg-info fs-6">Request Status: {{single_request.request_status}}</span></td>
+									</div>
+								</div>
+								<div class="card-body">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+											<div class="row">
+												<img 
+													style="height: 500px; border: 2px solid rgb(158, 154, 154); border-radius: 5px; cursor: pointer;"
+													src="{{ salesman_image.url }}" class="img-fluid rounded-start" alt="..."
+												>
+											</div>
+											<div class="row" style="align-content: center;" center;">
+												{% if checker_image_1.url != "/media/product.jpg" %}
+												<div class="col customBorder">
+													<img src="{{ checker_image_1.url }}" class="img-fluid rounded-start" alt="..." style="height: 100%">
+												</div>
+												{% endif %}
+												{% if checker_image_2.url != "/media/product.jpg" %}
+												<div class="col customBorder">
+													<img src="{{ checker_image_2.url }}" class="img-fluid rounded-start" alt="..." style="height: 100%">
+												</div>
+												{% endif %}
+											</div>
+										  
+                                        </div>
+                                        <div class="col-md-8">
+                                          <div class="card-body ms-2">
+                                            <form method="post" id="universal_form" enctype="multipart/form-data">
+                                                <div class="row" id="inputs">
+													{% csrf_token %}
+                                                    <div class="col">
+                                                        <label class="form-label">Company Name</label>
+                                                        <input class="form-control form-control-lg" type="text" name="" id="" value="{{single_request.vid.company_name}}">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="form-label">Refund Type</label>
+                                                        <input class="form-control form-control-lg" type="text" name="" id="" value="{{single_request.refund_type}}">
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label class="form-label">Raised By</label>
+                                                        <input class="form-control form-control-lg" type="text" name="" id="" value="{{single_request.vid.salesman_name}}" readonly>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label class="form-label">Remarks by Salesman</label>
+                                                        <textarea class="form-control" id="salesman_remarks" rows="3" {% if request.user.role != 'salesman' %} readonly {% endif %}>{{ salesman_remark }}</textarea>
+                                                    </div>
+                                                </div>
+												<div class="mt-3" id="salesman_image_div" style="display: none;">
+													<label class="form-label">Update Image</label>
+													<div class="input-group mb-3">
+														<input type="file" class="form-control" id="salesman_image">
+														<button onclick="updateSalesmanImage(event)" class="input-group-text" for="inputGroupFile02">Upload</button>
+													  </div>													  
+												</div>
+
+												{% if receiver_remarks or request.user.role == 'receiver' %}
+                                                <br>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label class="form-label">Remarks by Receiver</label>
+                                                        <textarea class="form-control" id="receiver_remarks" rows="3" {% if request.user.role != 'receiver' %} readonly {% endif %}>{{ receiver_remarks }}</textarea>
+                                                    </div>
+                                                </div>
+												{% endif %}
+
+												{% if checker_remarks or request.user.role == 'checker' %}
+												<br>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label class="form-label">Remarks by Checker</label>
+                                                        <textarea class="form-control" id="checker_remarks" rows="3" {% if request.user.role != 'checker' %} readonly {% endif %}>{{checker_remarks}}</textarea>
+                                                    </div>
+                                                </div>
+												{% endif %}
+												
+												{% if request.user.role == 'checker' %}
+												<div class="mt-3" id="checker_image_div" style="display: none;">
+													<label class="form-label">Update Image 1</label>
+													<div class="input-group mb-3">
+														<input type="file" class="form-control" id="checker_image_1">
+														<button onclick="updateCheckerImage(event, 'checker_image_1')" class="input-group-text">Upload</button>
+													</div>                                                      
+													<label class="form-label">Update Image 2</label>
+													<div class="input-group mb-3">
+														<input type="file" class="form-control" id="checker_image_2">
+														<button onclick="updateCheckerImage(event, 'checker_image_2')" class="input-group-text">Upload</button>
+													</div>
+													<button onclick="updateCheckerImageTogether(event)" class="btn btn-primary">Update Both</button>											  
+												</div>
+												{% endif %}
+												
+                                                <div class="text-center mt-3 button-flex">
+													{% if request.user.role == 'salesman' %}
+														<a href="" class="btn btn-lg btn-danger">Delete Request</a>
+														<button onclick="showImageSalesman(event)" class="btn btn-lg btn-warning">Change Image</button>
+														<button onclick="updateSalesmanRemark(event)" class="btn btn-lg btn-success">Update</button>
+													{% elif request.user.role == 'receiver' %}
+														<a href="{% url 'rejectRequest' single_request.rid %}" class="btn btn-lg btn-danger">Reject Request</a>
+														<button onclick="updateReceiverRemark(event)" class="btn btn-lg btn-success">Update</button>
+														{% if single_request.request_status != 'accepted' %}
+														<button onclick="acceptRequest(event)" class="btn btn-lg btn-success">Accept Request</button>
+														{% endif %}
+													{% elif request.user.role == 'checker' %}
+														<a href="{% url 'rejectRequest' single_request.rid %}" class="btn btn-lg btn-danger">Fail</a>
+														<button onclick="showImageChecker(event)" class="btn btn-lg btn-warning">Change Image</button>
+														<button onclick="updateCheckerRemark(event)" class="btn btn-lg btn-success">Update</button>
+														<button onclick="acceptRequest(event)"  class="btn btn-lg btn-success">Pass</button>
+													{% endif %}
+                                                </div>
+                                            </form>
+                                          </div>
+                                        </div>
+                                    </div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+            <script>
+				function updateSalesmanRemark(event){
+					event.preventDefault();
+					let salesman_remarks = $('#salesman_remarks').val();
+
+					$.ajax({
+						type: 'POST',
+						url: '{% url "updateSalesmanRemark" single_request.rid %}',
+						data: {
+							updated_remark: salesman_remarks,
+							csrfmiddlewaretoken: '{{ csrf_token }}',
+						},
+						success: function(data){
+							console.log(data)
+							alert('Updated')
+						},
+						error: function(data){
+							console.log('Error')
+						}
+					})
+				}
+
+				function showImageSalesman(event){
+					event.preventDefault();
+					salesman_image_div = $('#salesman_image_div').css('display', 'block')
+				}
+
+				function acceptRequest(event){
+					event.preventDefault();
+					$.ajax({
+                        type: 'GET',
+                        url: '{% url "acceptRequest" single_request.rid %}',
+                        success: function(data){
+                            alert('Accepted')
+							window.location.href = '{% url "viewSingleRequest" single_request.rid %}'
+                        },
+                        error: function(data){
+                            console.log('Error')
+                        }
+                    })
+				}
+
+
+				function updateSalesmanImage(event){
+					event.preventDefault();
+
+					let salesman_image = $('#salesman_image')[0].files[0];
+
+					let formData = new FormData();
+    				formData.append("updated_image_salesman", salesman_image);
+    				formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+
+					if (!salesman_image) {
+						alert("Please select an image before uploading.");
+						return;
+					}
+
+					$.ajax({
+                        type: 'POST',
+                        url: '{% url "updateSalesmanImage" single_request.rid %}',
+                        data: formData,
+						processData: false,
+        				contentType: false,
+                        success: function(data){
+                            console.log(data)
+							window.location.href = '{% url "viewSingleRequest" single_request.rid %}'
+                        },
+                        error: function(data){
+                            console.log('Error')
+                        }
+                    })
+				}
+
+				function updateReceiverRemark(event){
+					event.preventDefault();
+					let receiver_remarks = $('#receiver_remarks').val();
+					console.log(receiver_remarks)
+					$.ajax({
+						type: 'POST',
+						url: '{% url "updateReceiverRemark" single_request.rid %}',
+						data: {
+							updated_remark: receiver_remarks,
+							csrfmiddlewaretoken: '{{ csrf_token }}',
+						},
+						success: function(data){
+							console.log(data)
+							alert('Updated')
+						},
+						error: function(data){
+							console.log('Error')
+						}
+					})
+				}
+
+				function updateCheckerRemark(event){
+					event.preventDefault();
+					let checker_remarks = $('#checker_remarks').val();
+					console.log(checker_remarks)
+					$.ajax({
+						type: 'POST',
+						url: '{% url "updateCheckerRemark" single_request.rid %}',
+						data: {
+							updated_remark: checker_remarks,
+							csrfmiddlewaretoken: '{{ csrf_token }}',
+						},
+						success: function(data){
+							console.log(data)
+							alert('Updated')
+						},
+						error: function(data){
+							console.log('Error')
+						}
+					})
+				}
+
+				function showImageChecker(event){
+					event.preventDefault();
+					salesman_image_div = $('#checker_image_div').css('display', 'block')
+				}
+
+				function updateCheckerImage(event, id){
+					event.preventDefault();
+					
+					let fileInput = $('#'+id);
+					checker_image = fileInput[0].files[0]; 
+
+					let formData = new FormData();
+    				formData.append("updated_image_checker_"+id.slice(-1), checker_image);
+    				formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+
+					if (!checker_image) {
+						alert("Please select an image before uploading.");
+						return;
+					}
+
+					$.ajax({
+                        type: 'POST',
+                        url: '{% url "updateCheckerImage" single_request.rid %}',
+                        data: formData,
+						processData: false,
+        				contentType: false,
+                        success: function(data){
+                            console.log(data)
+							window.location.href = '{% url "checkerViewSingleRequest" single_request.rid %}'
+                        },
+                        error: function(data){
+                            console.log('Error')
+                        }
+                    })
+				}
+
+				function updateCheckerImageTogether(event){
+					event.preventDefault();
+
+					let checker_image_1 = $('#checker_image_1')[0].files[0];
+					let checker_image_2 = $('#checker_image_2')[0].files[0]; 
+
+					console.log("Checker Image 1 File: ", $('#checker_image_1')[0].files[0]);
+					console.log("Checker Image 2 File: ", $('#checker_image_2')[0].files[0]);
+
+
+					if (!checker_image_1 || !checker_image_2) {
+						alert("Please select an image before uploading.");
+						return;
+					}
+
+					let formData = new FormData();
+    				formData.append("updated_image_checker_1", checker_image_1);
+    				formData.append("updated_image_checker_2", checker_image_2);
+    				formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+
+
+					$.ajax({
+                        type: 'POST',
+                        url: '{% url "updateCheckerImageBoth" single_request.rid %}',
+                        data: formData,
+						processData: false,
+        				contentType: false,
+                        success: function(data){
+                            console.log(data)
+							window.location.href = '{% url "checkerViewSingleRequest" single_request.rid %}'
+                        },
+                        error: function(data){
+                            console.log('Error')
+                        }
+                    })
+				}
+			</script>
+			
+
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+			<main class="content">
+				<div class="container-fluid p-0">
+					<a href="{% url 'salesman_dashboard' %}" class="btn btn-info" style="margin-bottom: 10px;">
+						<strong>
+							<i class="align-middle me-2" data-feather="arrow-left-circle"></i> <span class="align-middle">Back</span>
+						</strong>
+					</a>
+					
+					<h1 class="h3 mb-3">
+						Edit User: {{user_object.username}}
+					</h1>
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Please fill the following details - </h5>
+								</div>
+								<div class="card-body">
+                                    <form method="post" action="{% url 'editUser' user_object.pk %}">
+										{% csrf_token %}
+                                        <div class="row">
+                                            <div class="col">
+                                                <label class="form-label">Username</label>
+                                                {{form.username}}
+                                            </div>
+                                            <div class="col">
+                                                <label class="form-label">Email</label>
+                                                {{form.email}}
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col">
+                                                <label class="form-label">User Role</label>
+                                                {{form.role}}
+                                                {{form.role.value}}
+                                            </div>
+                                            <div class="col">
+                                                <label class="form-label">Date Joined</label>
+                                                <input class="form-control form-control-lg" type="text" name="phone_number" value="{{user_object.date_joined}}" readonly />
+                                            </div>
+                                            
+                                        </div>
+										<br>
+										<div class="text-center mt-3">
+											<button class="btn btn-lg btn-success">Update User</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+			
+{% endblock %}

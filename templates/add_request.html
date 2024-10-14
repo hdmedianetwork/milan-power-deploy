@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+            <style>
+                @media screen and (max-width: 480px) {
+					#formInputs {
+						display: flex;
+						flex-direction: column;
+					}
+
+                    #formInputs * {
+                        margin-bottom: 10px;
+                    }
+
+				}
+
+                #successMessage {
+                    width: 100%;
+                    background: rgb(2, 178, 2);
+                    color: white;
+                    font-size: medium;
+                    border-radius: 5px;
+                    display: flex; 
+                    justify-content: space-between;
+                }
+
+            </style>
+            
+
+			<main class="content">
+                {% if message%}
+                <div id="successMessage" class="p-2 mb-2">
+                    {{message}}
+                    <div onclick="hide()" style="cursor: pointer;">
+                        x
+                    </div>
+                </div>
+                {% endif %}
+
+				<div class="container-fluid p-0">
+                    <button onclick="back()" class="btn btn-info" style="margin-bottom: 10px;">
+						<strong>
+							<i class="align-middle me-2" data-feather="arrow-left-circle"></i> <span class="align-middle">Back</span>
+						</strong>
+					</button>
+
+					<h1 class="h3 mb-3">Add Refund Request</h1>
+
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Please fill the following details - </h5>
+								</div>
+								<div class="card-body">
+                                    <form method="post" action="" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="row" id="formInputs">
+
+                                            <div class="col">
+                                                <label class="form-label">Company Name</label>
+                                                <select class="form-select form-select-lg" name="vendor_id">
+                                                    <option selected>Open this select menu</option>
+                                                    {% for vendor in vendors %}
+                                                        <option value="{{vendor.vid}}">{{vendor.company_name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col">
+                                                <label class="form-label">Refund Type</label>
+                                                <input class="form-control form-control-lg" type="text" name="refund_type" value="Normal" placeholder="Normal" readonly/>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div id="col">
+                                                <label class="form-label">Add Remarks</label>
+                                                <textarea class="form-control" id="" name="salesman_remarks" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div id="col">
+                                                <label for="fileUpload" class="form-label">Add Image</label>
+                                                <input class="form-control" type="file" id="fileUpload" name="image_salesman">
+                                            </div>
+                                        </div>
+										<br>
+										<div class="text-center mt-3">
+											<button onclick="submitForm(event)" type="submit" class="btn btn-lg btn-success">Add Request</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+            
+
+            <script>
+                function hide(){
+                    successMessage = document.getElementById('successMessage');
+                    successMessage.style.display = 'none';
+                }
+
+                function back(){
+                    window.history.back();
+                }
+
+                function submitForm(e){
+                    var image = $('#image_salesman')[0].files[0]; 
+
+                    e.preventDefault();
+
+                    alert('Data Submitted Successfuly!')
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "addRequest" %}',
+                        data: {
+                            vendor_id: $('#vendor_id').val(),
+                            refund_type: $('#refund_type').val(),
+                            salesman_remarks: $('#salesman_remarks').val(),
+                            image_salesman: image_salesman,
+							csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        success: function(data){
+                            console.log(data)
+                        },
+                        error: function(xhr, status, error) {
+                            console.log("Error: ", status, error); 
+                        }
+                    })
+                }
+            </script>
+
+{% endblock %}

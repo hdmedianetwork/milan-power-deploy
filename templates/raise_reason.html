@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+            <style>
+                @media screen and (max-width: 480px) {
+					#formInputs {
+						display: flex;
+						flex-direction: column;
+					}
+
+                    #formInputs * {
+                        margin-bottom: 10px;
+                    }
+
+				}
+            </style>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<h1 class="h3 mb-3">Add Refund Request</h1>
+
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Please fill the following details - </h5>
+								</div>
+								<div class="card-body">
+                                    <form method="post" action="" id="request_form" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="row" id="formInputs">
+
+                                            <div class="col">
+                                                <label class="form-label">Request Number</label>
+                                                <input class="form-control form-control-lg" type="text" name="request_number" placeholder="Enter Request Number" value="{{ single_request.rid }}" readonly/>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div id="col">
+                                                <label class="form-label">Reason for Urgency</label>
+                                                <textarea class="form-control" id="urgency_reason" name="urgency_reason" rows="3">{% if urgency_reason %}{{urgency_reason}}{% endif %}</textarea>
+                                            </div>
+                                        </div>
+										<br>
+										<div class="text-center mt-3">
+											<button type="submit" class="btn btn-lg btn-success">Submit</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+
+            <script>
+                $document.on('submit', 'request_form', function(e){
+                    var urgency_reason = $('#urgency_reason').val() 
+                    console.log(urgency_reason)
+
+                    e.preventDefault();
+
+                    $.ajax({
+                        type: 'POST',
+                        dataType: "json",
+                        url: '{% url "raiseReason" single_request.rid %}',
+                        data: {
+                            urgency_reason: urgency_reason,
+							csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        success: function(data){
+                            console.log(data)
+                            alert('data updated')
+                            window.location.href = '{% url "raiseReason" single_request.rid %}'
+                        },
+                        error: function(data){
+                            console.log('Error')
+                        }
+                    })
+                })
+            </script>
+
+{% endblock %}

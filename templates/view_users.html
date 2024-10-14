@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+			<style>
+				@media screen and (max-width: 480px) {
+					#editMedia {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: center;
+					}
+
+					#editMedia form {
+						width: 100%;
+						margin-bottom: 10px;
+					}
+
+				}
+				
+			</style>
+
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+			<script>
+				$(document).ready(function(){
+					$("#searchBar").on("keyup", function() {
+						var value = $(this).val().toLowerCase();
+						console.log("Searching for: " + value);
+						$("#dataTable tbody tr").filter(function() {
+						$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+						});
+					});
+				});
+			</script>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<h1 class="h3 mb-3"><strong>Admin Dashboard</strong> Dashboard: {{role}}</h1>
+
+					<div class="row">
+						<div class="col">
+							<div class="card flex-fill">
+								<div class="card-header d-flex justify-content-between" id="editMedia">
+									<form>
+										<input type="text" class="form-control" name="" id="searchBar" placeholder="Type to Search">
+									</form>
+									<div>
+										<a onclick="deleteVendor()" class="btn btn-danger">Delete</a>
+									</div>
+								</div>
+
+								<div class="table-responsive">
+									<table class="table" id="dataTable">
+										<thead>
+											<tr>
+												<th>
+													<input type="checkbox" name="selectAll" id="selectAll" onchange="selectAll()">
+													Select
+												</th>
+												<th>S.No.</th>
+												<th>Email ID</th>
+												<th>Username</th>
+												<th>Role</th>
+												<th>Date Joined</th>
+												<th>Actions</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% if requests %}
+												{% for request in requests %}
+													<tr>
+														<td><input type="checkbox" name="selectedRequests" id="{{ request.pk }}"></td>
+														<td>{{ forloop.counter }}</td>
+														<td>{{ request.email }}</td>
+														<td>{{ request.username }}</td>
+														<td>{{ request.role }}</td>
+														<td>{{ request.date_joined }}</td>
+														<td>
+															<a href="{% url 'editUser' request.pk %}" class="btn btn-primary">Edit</a>
+															<button onclick="deleteUser('{{request.pk}}')" class="btn btn-danger">Delete</button>
+														</td>
+													</tr>
+												{% endfor %}
+											{% else %}
+												<tr>
+													<td colspan="7">No data in table</td>
+												</tr>
+											{% endif %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<!-- Pagination -->
+							{% include 'pagination.html' %}
+							<div class="pagination">
+								<a href="/dashboard/notifications/?page=1">&laquo;</a>
+								{% if requests.has_previous %}
+								<a href="/dashboard/notifications/?page={{ requests.previous_page_number }}">{{ requests.previous_page_number }}</a>
+								{% endif %}
+								<a class="active" href="/dashboard/notifications/?page={{ requests.number }}">{{ requests.number }}</a>
+								{% if requests.has_next %}
+								<a href="/dashboard/notifications/?page={{ requests.next_page_number }}">{{ requests.next_page_number }}</a>
+								{% endif %}
+								<a href="/dashboard/notifications/?page={{ requests.paginator.num_pages }}">&raquo;</a>
+							</div>
+							<!-- Pagination Ends -->
+						</div>
+						<h6 style="margin-top: 10px;">Showing page {{ requests.number }} out of {{ requests.paginator.num_pages }}</h6>
+					</div>
+
+				</div>
+			</main>
+
+			<script>
+				function deleteUser(pk){
+					let url = '{% url "deleteUser" "dummy_pk" %}'.replace('dummy_pk', pk);
+
+					$.ajax({
+						type: 'POST',
+						url: url,
+						data: {
+							csrfmiddlewaretoken: '{{ csrf_token }}',
+						},
+						success: function(data){
+							console.log(data)
+							alert('Deleted')
+							window.location.href = window.location.href;
+						},
+						error: function(data){
+							console.log('Error')
+						}
+					})
+				}
+			</script>
+
+{% endblock %}
