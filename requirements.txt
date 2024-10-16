@@ -1,9 +1,0 @@
-﻿asgiref
-Django
-django-jazzmin
-django-shortuuidfield
-pillow
-shortuuid
-six
-sqlparse
-tzdata

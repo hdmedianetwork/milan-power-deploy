@@ -143,7 +143,7 @@
                         </a>
 					</li>
 					<li class="sidebar-item">
-						<a class="sidebar-link" href="{% url 'allUrgentRequestView' %}">
+						<a class="sidebar-link" href="">
                             <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">Urgent Requests</span>
                         </a>
 					</li>
@@ -169,13 +169,44 @@
                         </a>
 					</li>
 					<li class="sidebar-item">
-						<a class="sidebar-link" href="{% url '' %}">
+						<a class="sidebar-link" href="">
                             <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">Urgent Requests</span>
                         </a>
 					</li>
 					<li class="sidebar-item">
 						<a class="sidebar-link" href="{% url 'accountantViewRefundRequests' %}">
                             <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">Refunded Requests</span>
+                        </a>
+					</li>
+                    {% elif request.user.role == 'admin' %}
+                    <li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'admin_dashboard' %}">
+                            <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">Dashboard</span>
+                        </a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'viewSalesman' %}">
+                            <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">View Salesman</span>
+                        </a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'viewReceiver' %}">
+                            <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">View Receiver</span>
+                        </a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'viewChecker' %}">
+                            <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">View Accountant</span>
+                        </a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'viewAccountant' %}">
+                            <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">View Checker</span>
+                        </a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'adminViewAllRequests' %}">
+                            <i class="align-middle" data-feather="chevrons-right"></i> <span class="align-middle">View Requests</span>
                         </a>
 					</li>
                     {% endif %}

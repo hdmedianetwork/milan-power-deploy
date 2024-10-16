@@ -62,12 +62,14 @@
 									<h5 class="card-title mb-0">Request Number - {{single_request.rid}}</h5>
 									<br>
 									<div>
-										{% if single_request.urgency_status == 'in_review' %}
-										<td><span class="badge bg-warning fs-6">Urgency: In Review</span></td>
-										{% elif single_request.urgency_status == 'accepted' %}
-										<td><span class="badge bg-success fs-6">Urgency: Accepted</span></td>
-										{% elif single_request.urgency_status == 'rejected' %}
-										<td><span class="badge bg-danger fs-6">Urgency: Rejected</span></td>
+										{% if single_request.uid != 'random' %}
+											{% if single_request.urgency_status == 'in_review' %}
+											<td><span class="badge bg-warning fs-6">Urgency: In Review</span></td>
+											{% elif single_request.urgency_status == 'accepted' %}
+											<td><span class="badge bg-success fs-6">Urgency: Accepted</span></td>
+											{% elif single_request.urgency_status == 'rejected' %}
+											<td><span class="badge bg-danger fs-6">Urgency: Rejected</span></td>
+											{% endif %}
 										{% endif %}
 										<td><span class="badge bg-info fs-6">Request Status: {{single_request.request_status}}</span></td>
 									</div>
@@ -102,11 +104,11 @@
 													{% csrf_token %}
                                                     <div class="col">
                                                         <label class="form-label">Company Name</label>
-                                                        <input class="form-control form-control-lg" type="text" name="" id="" value="{{single_request.vid.company_name}}">
+                                                        <input class="form-control form-control-lg" type="text" name="" id="" value="{{single_request.vid.company_name | title}}">
                                                     </div>
                                                     <div class="col">
                                                         <label class="form-label">Refund Type</label>
-                                                        <input class="form-control form-control-lg" type="text" name="" id="" value="{{single_request.refund_type}}">
+                                                        <input class="form-control form-control-lg" type="text" name="" id="" value="{{single_request.refund_type | title}}">
                                                     </div>
                                                 </div>
                                                 <br>

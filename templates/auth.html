@@ -19,6 +19,21 @@
 
 	<link href="{% static 'css/app.css' %}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+	<style>
+		.alert {
+			padding: 5px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		}
+
+		.alert-primary {
+			color: #004085;
+			background-color: #cce5ff;
+			border-color: #b8daff;
+		}
+
+	</style>
 </head>
 
 <body style="background-image: url('{% static 'img/photos/background.jpg' %}'); background-size: cover; background-position: center; height: 100%; ">
@@ -37,16 +52,17 @@
 
 						<div class="card">
 							<div class="card-body">
-								{% if messages %}
-									<div class="messages">
-									{% for message in messages %}
-										{% if forloop.last %}
-											<li class="alert alert-primary">{{ message }}</li>
-										{% endif %}
-										
-									{% endfor %}
+								{% if form.errors %}
+									<div class="alert alert-primary">
+										{% for field, errors in form.errors.items %}
+											{% if forloop.counter <= 2 %}
+												<span><strong>{{ field | title }}</strong> : {{ errors.0 }}</span>
+												<br>
+											{% endif %}
+										{% endfor %}
 									</div>
 								{% endif %}
+
 								<div class="m-sm-4">
 									<div class="text-center">
 										<img src="{% static 'img/photos/logo.png' %}" alt="Charles Hall" class="img-fluid rounded-circle" width="200" height="132" />
@@ -110,7 +126,7 @@
 		</div>
 	</main>
 
-	<!-- <script src="js/app.js"></script> -->
+	<script src="js/app.js"></script>
 
 </body>
 

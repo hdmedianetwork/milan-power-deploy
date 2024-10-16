@@ -19,7 +19,9 @@
 								{% for message in messages %}
 									{% if forloop.last %}
 										<div class="bg-primary m-2 p-2" style="border-radius: 5px; color: white;">
-											{{message}}
+											{% if message != 'Successfully logged in.' %}
+												{{message}}
+											{% endif %}
 										</div>
 									{% endif %}
 								{% endfor %}

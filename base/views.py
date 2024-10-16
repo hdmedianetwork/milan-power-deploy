@@ -42,9 +42,7 @@ def userRegistration(request):
 
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
-        print(f"Form {form}")
         if form.is_valid():
-            print("True")
             new_user = form.save(commit=False)
             role = form.cleaned_data['role'] 
             new_user.role = role
@@ -55,7 +53,9 @@ def userRegistration(request):
             login(request, new_user)
             return redirect('home')
         else:
-            messages.error(request, 'Some error')
+            for item in form.errors:
+                print(item)
+            messages.error(request, form.errors)
 
     context = {
         'page': 'register',
@@ -319,8 +319,7 @@ def deleteRequests(request):
     return render(request, 'viewRequests')
 
 @login_required(login_url=userLogin)
-def viewSingleRequest(request, rid):
-    
+def viewSingleRequest(request, rid):    
     single_request = requestTable.objects.filter(rid=rid).first()
     request_object = requestTable.objects.get(rid = rid)
     remark_object = requestRemarks.objects.get(request_id = request_object)
@@ -882,8 +881,6 @@ def accountantViewRefundRequests(request):
 
 @login_required(login_url=userLogin)
 def uploadInvoice(request, rid):
-    if (request.user.role != 'accountant'):
-        return render(request, 'accessDenied.html')
     
     single_request = requestTable.objects.get(rid = rid)
 
